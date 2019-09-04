@@ -3,7 +3,7 @@ const schema= mongoose.Schema;
 
 require('mongoose-currency').loadType(mongoose);
 
-const Currency= mongoose.Types.Currency;
+const currency= mongoose.Types.Currency;
 const commentSchema= new schema({
 
 	rating:{
@@ -51,7 +51,7 @@ const dishSchema= new schema({
 	},
 	price:{
 
-		type: Currency,
+		type: currency,
 		required: true, 
 		min: 0
 	},
