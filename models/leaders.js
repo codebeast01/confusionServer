@@ -1,10 +1,6 @@
 const mongoose= require('mongoose');
 const schema= mongoose.Schema;
 
-require('mongoose-currency').loadType(mongoose);
-
-const currency= mongoose.Types.Currency;
-
 const leaderSchema= new schema({
 
 	name:{
