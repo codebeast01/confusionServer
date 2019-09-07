@@ -32,38 +32,54 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser('12346-21141-00010-98711')); //Passing the secret key to the server for signing the cookies.
 
 function auth(req, res, next){
 
-	console.log(req.headers);
+	console.log(req.signedCookies);
 
-	var authHeader= req.headers.authorization;
+	if(!req.signedCookies.user){
+		var authHeader= req.headers.authorization;
 
-	if(!authHeader){
+		if(!authHeader){
 
-		err= new Error("You are not authorized");
+			err= new Error("You seem to be unauthorized");
 
-		res.setHeader('www-authenticate', 'basic');
-		err.status= 401;
-		next(err);
-		return;
+			res.setHeader('WWW-authenticate', 'basic');
+			err.status= 401;
+			return next(err);
+		}
+
+		const auth= new Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
+		var username= auth[0];
+		var password= auth[1];
+
+		if(username==='admin' && password==='password'){
+			res.cookie('user','admin',{signed:true});
+			next();
+		}
+		else{
+
+			err= new Error("You seem to be unauthorized");
+
+			res.setHeader('WWW-authenticate', 'basic');
+			err.status= 401;
+			return next(err);
+		}	
 	}
-
-	const auth= new Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
-	var username= auth[0];
-	var password= auth[1];
-
-	if(username=='admin' && password=='password')
-		next();
 	else{
 
-		err= new Error("You are not authorized");
+			if(req.signedCookies.user==='admin')
+				next();
+			else{
 
-		res.setHeader('www-authenticate', 'basic');
-		err.status= 401;
-		next(err);
+				err= new Error("You seem to be unauthorized");
+			
+				err.status= 401;
+				return next(err);
+			}
 	}
+	
 }
 
 app.use(auth);

@@ -106,7 +106,7 @@ dishRouter.route('/:dishId')
 
 });
 
-dishRouter.route('/:dishes/comments')
+dishRouter.route('/:dishId/comments')
 .get((req, res, next) =>{
 
 	Dishes.findById(req.params.dishId)
@@ -114,10 +114,10 @@ dishRouter.route('/:dishes/comments')
 		if(dish!= null){
 			res.statuscode=200;
 			res.setHeader('content-Type', 'application/json');
-			res.json(dish);
+			res.json(dish.comments);
 		}
 		else{
-			err= new Error("Dish "+ req.params.dishId+ " is not found");
+			err= new Error("Dish: "+ req.params.dishId+ " is not found");
 			err.status=404;
 			return next(err);
 		}
