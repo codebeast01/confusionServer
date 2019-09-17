@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session= require('express-session');
+var passport= require('passport');
 var fileStore= require('session-file-store')(session);
 
 var indexRouter = require('./routes/index');
@@ -12,8 +13,10 @@ var dishRouter= require('./routes/dishRouter');
 var leaderRouter = require('./routes/leaderRouter');
 var promoRouter =require('./routes/promoRouter');
 
+
 const mongoose= require('mongoose');
 const Dishes= require('./models/dishes');
+var authenticate= require('./authenticate');
 
 const url="mongodb://localhost:27017/conFusion";
 
@@ -35,44 +38,38 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-
+//var fileStoreOptions = {};
 app.use(session({
 
 	name:'session-id',
 	secret:'12346-21141-00010-98711',
 	saveUninitialized: false,
 	resave: false,
-	store: new fileStore()
+	store: new fileStore({path: './sessions'})
 
 }));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 function auth(req, res, next){
 
-	console.log(req.session);
+	console.log(req.user);
 
-	if(!req.session.user){
+	if(!req.user){
+
 		err= new Error("You seem to be unauthorized");
 			
-		err.status= 401;
-		return next(err);
+		err.status= 403;
+		next(err);
 	}
-	else{
-
-		if(req.session.user==='authenticated')
-			next();
-		else{
-
-			err= new Error("You seem to be unauthorized");
-		
-			err.status= 401;
-			return next(err);
-		}
-	}
-	
+	else
+		next();
 }
+	
 
 app.use(auth);
 
