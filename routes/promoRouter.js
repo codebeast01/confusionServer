@@ -4,6 +4,7 @@ const bodyParse= require('body-parser');
 const promoRouter =express.Router();
 const mongoose= require('mongoose');
 const promos= require('../models/promotions');
+var authenticate= require('../authenticate');
 
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
@@ -24,7 +25,7 @@ promoRouter.route('/')
 	.catch((err)=> next(err));
 })
 
-.post((req, res, next) =>{
+.post(authenticate.verifyUser,(req, res, next) =>{
 
 	promos.create(req.body)
 	.then((promo)=>{
@@ -38,13 +39,13 @@ promoRouter.route('/')
 	.catch((err)=> next(err));
 })
 
-.put((req, res, next) =>{
+.put(authenticate.verifyUser,(req, res, next) =>{
 
 	res.statuscode=403;
 	res.end('PUT is not supported in /promotions');
 })
 
-.delete((req, res, next) =>{
+.delete(authenticate.verifyUser,(req, res, next) =>{
 
 	promos.remove({})
 	.then((resp)=>{
@@ -70,13 +71,13 @@ promoRouter.route('/:promoId')
 	}, (err)=> next(err))
 	.catch((err)=> next(err));	
 })
-.post((req, res, next) =>{
+.post(authenticate.verifyUser,(req, res, next) =>{
 
 	res.statuscode=403;
 	res.end('POST is not supported here in /promotions/'+req.params.promoId);
 })
 
-.put( (req, res, next) =>{
+.put(authenticate.verifyUser, (req, res, next) =>{
 
 	promos.findByIdAndUpdate(req.params.promoId,{
 
@@ -92,7 +93,7 @@ promoRouter.route('/:promoId')
 	.catch((err)=> next(err));	
 })
 
-.delete((req, res, next) =>{
+.delete(authenticate.verifyUser,(req, res, next) =>{
 
 	promos.findByIdAndRemove(req.params.promoId)
 	.then((resp)=>{

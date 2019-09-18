@@ -4,6 +4,7 @@ const bodyParse= require('body-parser');
 const leaderRouter =express.Router();
 const mongoose= require('mongoose');
 const Leaders= require('../models/leaders');
+var authenticate= require('../authenticate');
 
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
@@ -24,7 +25,7 @@ leaderRouter.route('/')
 	.catch((err)=> next(err));
 })
 
-.post((req, res, next) =>{
+.post(authenticate.verifyUser,(req, res, next) =>{
 
 	Leaders.create(req.body)
 	.then((leader)=>{
@@ -38,13 +39,13 @@ leaderRouter.route('/')
 	.catch((err)=> next(err));
 })
 
-.put((req, res, next) =>{
+.put(authenticate.verifyUser,(req, res, next) =>{
 
 	res.statuscode=403;
 	res.end('PUT is not supported in /leaders');
 })
 
-.delete((req, res, next) =>{
+.delete(authenticate.verifyUser,(req, res, next) =>{
 
 	Leaders.remove({})
 	.then((resp)=>{
@@ -70,13 +71,13 @@ leaderRouter.route('/:leaderId')
 	}, (err)=> next(err))
 	.catch((err)=> next(err));	
 })
-.post((req, res, next) =>{
+.post(authenticate.verifyUser,(req, res, next) =>{
 
 	res.statuscode=403;
 	res.end('POST is not supported here in /leaders/'+req.params.leaderId);
 })
 
-.put( (req, res, next) =>{
+.put(authenticate.verifyUser, (req, res, next) =>{
 
 	Leaders.findByIdAndUpdate(req.params.leaderId,{
 
@@ -92,7 +93,7 @@ leaderRouter.route('/:leaderId')
 	.catch((err)=> next(err));	
 })
 
-.delete((req, res, next) =>{
+.delete(authenticate.verifyUser,(req, res, next) =>{
 
 	Dishes.findByIdAndRemove(req.params.leaderId)
 	.then((resp)=>{
