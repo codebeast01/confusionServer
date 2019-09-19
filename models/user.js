@@ -3,6 +3,14 @@ const schema= mongoose.Schema;
 const local= require('passport-local-mongoose');
 
 const userSchema= new schema({
+	firstname:{
+		type:String, 
+		default: ''
+	},
+	lastname:{
+		type:String, 
+		default: ''
+	},
 	admin:{
 		type: Boolean,
 		default: false
@@ -10,5 +18,4 @@ const userSchema= new schema({
 });
 
 userSchema.plugin(local);
-var users= mongoose.model('user', userSchema);
-module.exports= users;
+module.exports= mongoose.model('user', userSchema);

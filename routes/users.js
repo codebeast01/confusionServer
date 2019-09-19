@@ -19,13 +19,27 @@ router.post('/signup', (req, res, next)=>{
 			{
 				res.statusCode=500;
 				res.setHeader('content-Type', 'application/json');
-				res.json({err:err});
+				res.json({err:err, status: 'first block error'});
 			}
 			else{
-				passport.authenticate('local')(req, res, ()=>{
-					res.statusCode=200;
-					res.setHeader('content-Type', 'application/json');
-					res.json({success: "true",status:"Registration successful..!!"});
+				if(req.body.firstname)
+					users.firstname=req.body.firstname;
+				if(req.body.firstname)
+					users.lastname=req.body.lastname;
+				
+				user.save((err, user)=>{
+
+					if(err){
+						res.statusCode=500;
+						res.setHeader('content-Type', 'application/json');
+						res.json({err:err});
+						return;
+					}
+					passport.authenticate('local')(req, res, ()=>{
+						res.statusCode=200;
+						res.setHeader('content-Type', 'application/json');
+						res.json({success: "true",status:"Registration successful..!!"});
+					});
 				});
 			}
 		});

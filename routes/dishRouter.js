@@ -15,9 +15,10 @@ dishRouter.use(bodyParse.json());
 
 dishRouter.route('/')
 .get((req, res, next) =>{
-
 	Dishes.find({})
+	.populate('comments.author')
 	.then((dishes)=>{
+		
 		res.statuscode=200;
 		res.setHeader('content-Type', 'application/json');
 		res.json(dishes);
@@ -64,6 +65,7 @@ dishRouter.route('/:dishId')
 .get((req, res, next) =>{
 	
 	Dishes.findById(req.params.dishId)
+	.populate('comments.author')
 	.then((dishes)=>{
 		res.statuscode=200;
 		res.setHeader('content-Type', 'application/json');
@@ -111,6 +113,7 @@ dishRouter.route('/:dishId/comments')
 .get((req, res, next) =>{
 
 	Dishes.findById(req.params.dishId)
+	.populate('comments.author')
 	.then((dish)=>{
 		if(dish!= null){
 			res.statuscode=200;
@@ -136,10 +139,13 @@ dishRouter.route('/:dishId/comments')
 			dish.comments.push(req.body);
 			dish.save()
 			.then((dish)=>{
-
-				res.statuscode=200;
-				res.setHeader('content-Type', 'application/json');
-				res.json(dish);
+				Dishes.findById(dish._id)
+				.populate('comments.author')
+				.then((dish)=>{
+					res.statuscode=200;
+					res.setHeader('content-Type', 'application/json');
+					res.json(dish);
+				});
 
 			}, (err)=> next(err))
 			.catch((err)=> next(err));
@@ -194,6 +200,7 @@ dishRouter.route('/:dishId/comments')
 dishRouter.route('/:dishId/comments/:commentId')
 .get((req, res, next) =>{
 	Dishes.findById(req.params.dishId)
+	.populate('comments.author')
 	.then((dish)=>{
 
 			if(dish!=null && dish.comments.id(req.params.commentId)!=null)
@@ -230,17 +237,19 @@ dishRouter.route('/:dishId/comments/:commentId')
 		if(dish!=null && dish.comments.id(req.params.commentId)!=null)
 			{
 				if(req.body.rating)
-					dish.comments.id(req.params.commentId).rating= req.body.rating;
+					dish.comments.id(req.params.commentId).rating= req.body.rating;	
 
 				if(req.body.comment)
 					dish.comments.id(req.params.commentId).comment= req.body.comment;
 				dish.save()
 				.then((dish)=>{
-
-					res.statuscode=200;
-					res.setHeader('content-Type', 'application/json');
-					res.json(dish);
-
+					Dishes.findById(dish._id)
+					.populate('comments.author')
+					.then((dish)=>{
+						res.statuscode=200;
+						res.setHeader('content-Type', 'application/json');
+						res.json(dish);
+					});
 				}, (err)=> next(err))
 				.catch((err)=> next(err))
 
@@ -271,9 +280,13 @@ dishRouter.route('/:dishId/comments/:commentId')
 				dish.save()
 				.then((dish)=>{
 
-					res.statuscode=200;
-					res.setHeader('content-Type', 'application/json');
-					res.json(dish);
+					Dishes.findById(dish._id)
+					.populate('comments.author')
+					.then((dish)=>{
+						res.statuscode=200;
+						res.setHeader('content-Type', 'application/json');
+						res.json(dish);
+					});
 
 				}, (err)=> next(err))
 				.catch((err)=> next(err))
