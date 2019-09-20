@@ -25,7 +25,7 @@ leaderRouter.route('/')
 	.catch((err)=> next(err));
 })
 
-.post(authenticate.verifyUser,(req, res, next) =>{
+.post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) =>{
 
 	Leaders.create(req.body)
 	.then((leader)=>{
@@ -39,13 +39,13 @@ leaderRouter.route('/')
 	.catch((err)=> next(err));
 })
 
-.put(authenticate.verifyUser,(req, res, next) =>{
+.put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) =>{
 
 	res.statuscode=403;
 	res.end('PUT is not supported in /leaders');
 })
 
-.delete(authenticate.verifyUser,(req, res, next) =>{
+.delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) =>{
 
 	Leaders.remove({})
 	.then((resp)=>{
@@ -71,13 +71,13 @@ leaderRouter.route('/:leaderId')
 	}, (err)=> next(err))
 	.catch((err)=> next(err));	
 })
-.post(authenticate.verifyUser,(req, res, next) =>{
+.post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) =>{
 
 	res.statuscode=403;
 	res.end('POST is not supported here in /leaders/'+req.params.leaderId);
 })
 
-.put(authenticate.verifyUser, (req, res, next) =>{
+.put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) =>{
 
 	Leaders.findByIdAndUpdate(req.params.leaderId,{
 
@@ -93,7 +93,7 @@ leaderRouter.route('/:leaderId')
 	.catch((err)=> next(err));	
 })
 
-.delete(authenticate.verifyUser,(req, res, next) =>{
+.delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) =>{
 
 	Dishes.findByIdAndRemove(req.params.leaderId)
 	.then((resp)=>{

@@ -9,8 +9,17 @@ var authenticate= require('../authenticate');
 router.use(bodyParser.json());
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+router.route('/')
+.get(authenticate.verifyUser, authenticate.verifyAdmin, function(req, res, next) {
+  	users.find({})
+  	.then((user)=>{
+
+  		res.statuscode=200;
+		res.setHeader('content-Type', 'application/json');
+		res.json(user);
+
+  	}, (err)=> next(err))
+  	.catch((err)=> next(err));
 });
 
 router.post('/signup', (req, res, next)=>{
@@ -23,9 +32,9 @@ router.post('/signup', (req, res, next)=>{
 			}
 			else{
 				if(req.body.firstname)
-					users.firstname=req.body.firstname;
-				if(req.body.firstname)
-					users.lastname=req.body.lastname;
+					user.firstname=req.body.firstname;
+				if(req.body.lastname)
+					user.lastname=req.body.lastname;
 				
 				user.save((err, user)=>{
 
@@ -43,7 +52,7 @@ router.post('/signup', (req, res, next)=>{
 				});
 			}
 		});
-	});
+});
 
 router.post('/login',passport.authenticate('local'), (req, res)=>{
 
@@ -54,7 +63,7 @@ router.post('/login',passport.authenticate('local'), (req, res)=>{
 
 });
 
-router.get('/logout', (req, res)=>{
+router.get('/logout', (req, res, next)=>{
 
 	if(req.session)
 	{
