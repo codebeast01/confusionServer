@@ -135,6 +135,7 @@ dishRouter.route('/:dishId/comments')
 	Dishes.findById(req.params.dishId)
 	.then((dish)=>{
 		if(dish!= null){
+			req.body.author= req.user._id;
 			dish.comments.push(req.body);
 			dish.save()
 			.then((dish)=>{
@@ -231,10 +232,11 @@ dishRouter.route('/:dishId/comments/:commentId')
 })
 
 .put(authenticate.verifyUser, (req, res, next) =>{
-	
 		Dishes.findById(req.params.dishId)
 		.then((dish)=>{
-			if(dish!=null && dish.comments.id(req.params.commentId)!=null && (dish.comments.id(req.params.commentId).author).equals(req.user._id))
+			var id1= dish.comments.id(req.params.commentId).author._id;
+	 		var id2= req.user._id;
+			if(dish!=null && dish.comments.id(req.params.commentId)!=null && id1.equals(id2))
 				{
 					if(req.body.rating)
 						dish.comments.id(req.params.commentId).rating= req.body.rating;	
@@ -250,8 +252,10 @@ dishRouter.route('/:dishId/comments/:commentId')
 							res.setHeader('content-Type', 'application/json');
 							res.json(dish);
 						});
-					}, (err)=> next(err))
-					.catch((err)=> next(err))
+					}, (err)=>{
+							err= new Error("value of id1= "+ id1 + " "+ id2);
+						 	 return next(err);
+						});
 
 				}
 				else if(dish==null){
@@ -272,7 +276,6 @@ dishRouter.route('/:dishId/comments/:commentId')
 				}
 		}, (err)=> next(err))
 		.catch((err)=> next(err));
-	
 })
 
 .delete(authenticate.verifyUser,(req, res, next) =>{

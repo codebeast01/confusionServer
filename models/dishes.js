@@ -12,17 +12,17 @@ const commentSchema= new schema({
 		max: 5,
 		required: true
 	},
+	author:{
+		type: schema.Types.ObjectId,
+		ref:'user'
+	},
 	comment:{
 		type: String,
 		required: true
-	},
-	author:{
-		type: mongoose.Schema.Types.ObjectId,
-		ref:'user'
 	}
 },{
-	timestamps: true
 
+	timestamps: true
 });
 
 const dishSchema= new schema({
@@ -31,7 +31,6 @@ const dishSchema= new schema({
 		type: String,
 		required: true,
 		unique: true
-
 	},
 	description:{
 		type: String,

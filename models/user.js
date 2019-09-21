@@ -2,7 +2,7 @@ const mongoose= require('mongoose');
 const schema= mongoose.Schema;
 const local= require('passport-local-mongoose');
 
-const userSchema= new schema({
+const user= new schema({
 	firstname:{
 		type:String, 
 		default: ''
@@ -17,5 +17,5 @@ const userSchema= new schema({
 	}
 });
 
-userSchema.plugin(local);
-module.exports= mongoose.model('user', userSchema);
+user.plugin(local);
+module.exports= mongoose.model('user', user);
