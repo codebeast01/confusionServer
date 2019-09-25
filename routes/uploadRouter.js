@@ -5,7 +5,7 @@ const multer=require('multer');
 const uploadRouter =express.Router();
 
 var authenticate= require('../authenticate');
-
+var cors= require('./cors');
 const Storage= multer.diskStorage({
 	destination: (req, file, cb)=>{
 		cb(null, 'public/images');
@@ -36,22 +36,23 @@ uploadRouter.use(bodyParse.json());
 
 
 uploadRouter.route('/')
-.put(authenticate.verifyUser,(req, res, cb) =>{
+.options(cors.corsWithOptions, (req, res)=>{res.statuscode(200);})
+.put(cors.corsWithOptions, authenticate.verifyUser,(req, res, cb) =>{
 
 	res.statuscode=403;
 	res.end('PUT is not supported in /imageUpload');
 })
-.get(authenticate.verifyUser,(req, res, cb) =>{
+.get(cors.cors, authenticate.verifyUser,(req, res, cb) =>{
 
 	res.statuscode=403;
 	res.end('GET is not supported in /imageUpload');
 })
-.delete(authenticate.verifyUser,(req, res, cb) =>{
+.delete(cors.corsWithOptions, authenticate.verifyUser,(req, res, cb) =>{
 
 	res.statuscode=403;
 	res.end('DELETE is not supported in /imageUpload');
 })
-.post(authenticate.verifyUser, authenticate.verifyAdmin, uploads.single('imageFile'), (req, res)=>{
+.post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, uploads.single('imageFile'), (req, res)=>{
 
 	res.statuscode=200;
 	res.setHeader('Content-Type','application/json');

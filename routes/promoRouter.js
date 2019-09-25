@@ -5,6 +5,7 @@ const promoRouter =express.Router();
 const mongoose= require('mongoose');
 const promos= require('../models/promotions');
 var authenticate= require('../authenticate');
+var cors= require('./cors');
 
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
@@ -13,7 +14,8 @@ mongoose.set('useCreateIndex', true);
 promoRouter.use(bodyParse.json());
 
 promoRouter.route('/')
-.get((req, res, next) =>{
+.options(cors.corsWithOptions, (req, res)=>{res.statuscode(200);})
+.get(cors.cors, (req, res, next) =>{
 
 	promos.find({})
 	.then((promos)=>{
@@ -25,7 +27,7 @@ promoRouter.route('/')
 	.catch((err)=> next(err));
 })
 
-.post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) =>{
+.post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) =>{
 
 	promos.create(req.body)
 	.then((promo)=>{
@@ -39,13 +41,13 @@ promoRouter.route('/')
 	.catch((err)=> next(err));
 })
 
-.put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) =>{
+.put(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) =>{
 
 	res.statuscode=403;
 	res.end('PUT is not supported in /promotions');
 })
 
-.delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) =>{
+.delete(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) =>{
 
 	promos.remove({})
 	.then((resp)=>{
@@ -60,7 +62,8 @@ promoRouter.route('/')
 
 
 promoRouter.route('/:promoId')
-.get((req, res, next) =>{
+.options(cors.corsWithOptions, (req, res)=>{res.statuscode(200);})
+.get(cors.cors, (req, res, next) =>{
 	
 	promos.findById(req.params.promoId)
 	.then((promos)=>{
@@ -71,13 +74,13 @@ promoRouter.route('/:promoId')
 	}, (err)=> next(err))
 	.catch((err)=> next(err));	
 })
-.post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) =>{
+.post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) =>{
 
 	res.statuscode=403;
 	res.end('POST is not supported here in /promotions/'+req.params.promoId);
 })
 
-.put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) =>{
+.put(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) =>{
 
 	promos.findByIdAndUpdate(req.params.promoId,{
 
@@ -93,7 +96,7 @@ promoRouter.route('/:promoId')
 	.catch((err)=> next(err));	
 })
 
-.delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) =>{
+.delete(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) =>{
 
 	promos.findByIdAndRemove(req.params.promoId)
 	.then((resp)=>{
