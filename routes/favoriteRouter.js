@@ -146,3 +146,4 @@ favoriteRouter.route('/:dishId')
 		next(err);
 	});
 });
+module.exports= favoriteRouter;
